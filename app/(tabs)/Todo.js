@@ -1,14 +1,20 @@
 
-import { Heading, Text, Center, Box, HStack, VStack, Checkbox, Button } from "native-base";
-import { SafeAreaView,View,TouchableOpacity } from "react-native";
+import { Heading, Text, Center, Box, HStack, VStack, Checkbox, Button, Fab, Pressable } from "native-base";
+import { SafeAreaView,View,TouchableOpacity,Animated,StyleSheet } from "react-native";
 import  Header  from "../../components/Header";
 import { FAB } from "@rneui/themed";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { Link, router } from "expo-router";
 
-const Video = () => {
+const Todo = () => {
     const [isJadwal,setIsJadwal] = useState(false)
     const [isisiJadwal,setIsIsiJadwal] = useState(true)
+    const [addButton, setAddButton] = useState(false);
+    const handleFABPress = () => {
+        // Ketika FAB ditekan, atur state untuk menampilkan button baru
+        setAddButton(true);
+    };
     const jadte = () => {
         return(
             <Box alignItems={"center"} width={"full"} height={150}>
@@ -26,7 +32,6 @@ const Video = () => {
                         </HStack>
                     </HStack>
                 </Box>
-                
             </Box>
         );
     };
@@ -92,31 +97,7 @@ const Video = () => {
                 )}
             </>
             
-            // <Box bg={"#FF7A01"} p={"5"} rounded={"lg"} margin={10}>
-            //     <VStack>
-            //         <HStack justifyContent={"space-between"} alignItems={"center"}>
-            //             <HStack alignItems={"center"}>
-            //                 <Ionicons name="calendar" color={"white"} size={15} />
-            //                 <Text>  </Text>
-            //                 <Text color="white" >2023-11-17</Text>
-            //                 <Text>  </Text>
-            //                 <Ionicons name="alarm" color={"white"} size={15} />
-            //                 <Text color="white" >19:00</Text>
-            //             </HStack>
-            //         </HStack>
-            //     </VStack>
-            //     <VStack>
-            //         <HStack justifyContent={"space-between"} alignItems={"center"}>
-            //             <HStack alignItems={"center"}>
-                            
-            //                 <Heading color={"white"}> halo </Heading>
-            //             </HStack>
-            //             <HStack space={"2xl"}>
-            //                 <Checkbox rounded={"xl"} borderColor={"white"} bgColor={"#FF7A01"} size={"lg"}/>
-            //             </HStack>
-            //         </HStack>
-            //     </VStack>
-            // </Box>
+           
         );
     };
     return (
@@ -127,9 +108,35 @@ const Video = () => {
                 Tugas()
             ) : (
                 Note()
+                // tambah()
             )}
-            <FAB placement="right"  size="large" color="#FF7A01" icon={<Ionicons name="add" size={25} color={"white"}/>}  />
+            {addButton ? (
+                <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]}>
+                    <Box alignItems={"flex-end"} width={"full"} height={""} flex={1}>
+                        <VStack space={4} alignItems={"flex-end"} position={"absolute"} bottom={30} right={30}>
+                            <Box>
+                                <HStack space={4} alignItems={"center"}>
+                                    <Text fontSize={"lg"}>Tambah Note</Text>  
+                                      
+                                    <FAB onPress={() => router.push({ pathname: '/add', params: { category: 'jadwal' } })} size="large" color="#FF7A01" icon={<Ionicons name="document-text" size={25} color={"white"}/>} />
+                                </HStack>
+                            </Box>
+                            <Box>
+                                <HStack space={4} alignItems={"center"}>
+                                    <Text fontSize={"lg"}>Tambah Jadwal</Text>
+                                    <FAB onPress={() => setAddButton(false)} size="large" color="#FF7A01" icon={<Ionicons name="today" size={25} color={"white"}/>} />
+                                </HStack>
+                            </Box>
+                            
+                            <FAB onPress={() => setAddButton(false)} size="large" color="red" icon={<Ionicons name="close" size={25} color={"white"}/>} />
+                        </VStack>
+                    </Box>
+                </Animated.View>
+            ) : (
+                <FAB placement="right" onPress={handleFABPress} size="large" color="#FF7A01" icon={<Ionicons name="add" size={25} color={"white"}/>}  />
+            )}
         </>
     );
 };
-export default Video;
+
+export default Todo;

@@ -10,6 +10,7 @@ const header = ({title,withback = false}) => {
         <SafeAreaView>
             <StatusBar barStyle={"light"} backgroundColor={"#FF7A01"}/>
             <Box bg={"#FF7A01"} p={"5"}>
+                
                 <HStack justifyContent={"space-between"} alignItems={"center"}>
                     <HStack alignItems={"center"}>
                         {!withback ?(
@@ -25,15 +26,21 @@ const header = ({title,withback = false}) => {
                         )}
                         <Heading color={"white"}> {title} </Heading>
                     </HStack>
-                    <HStack space={"2xl"}>
-                        <Link href={{ pathname: "/Notifications" }} asChild>
-                            <TouchableOpacity activeOpacity={0.5} >
-                                <Box mr={"3"}>
-                                    <Ionicons name="notifications" size={32} color={"white"}/>
-                                </Box>
-                            </TouchableOpacity>
-                        </Link>
-                    </HStack>
+                    {!withback ?(
+                        <HStack space={"2xl"}>
+                            <Link href={{ pathname: "/Notifications" }} asChild>
+                                <TouchableOpacity activeOpacity={0.5} >
+                                    <Box mr={"3"}>
+                                        <Ionicons name="notifications" size={30} color={"white"}/>
+                                    </Box>
+                                </TouchableOpacity>
+                            </Link>
+                        </HStack>
+                    ):(
+                        <>
+                        </>
+                    )}
+                    
                 </HStack>
             </Box>
         </SafeAreaView>
