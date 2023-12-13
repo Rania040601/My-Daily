@@ -10,14 +10,14 @@ const Video = () => {
             <Center flex={1}>
                 <Heading>Todo</Heading>
             </Center>
-            <Link href={{pathname:"/setting"}} asChild >
+            {/* <Link href={{pathname:"/setting"}} asChild >
                 <Button
                 leftIcon={<Icon name="cog-outline" as="Ionicons" color="white" />}
                 colorScheme="dark"
                 >
                     Settings
                 </Button>
-            </Link>
+            </Link> */}
             
             
         </>

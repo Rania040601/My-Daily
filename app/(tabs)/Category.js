@@ -9,25 +9,18 @@ const Category = () => {
     const bycategory = () =>{
         return(
             <>
-                
                 <TouchableOpacity activeOpacity={0.5}>
                         <Box bg={"#FF7A01"} p={3} rounded={"lg"} margin={1}>
-                            
-                            <Link href={{ pathname: "/ByCategory"}}>
-                            
+                            <Link href={{ pathname: "/ByCategory" }}>
                             <HStack justifyContent={"space-between"} >
                                 <HStack alignItems={"center"}space={"12"}>
                                     <Ionicons name="people" color={"white"} size={75}/>
                                     <Heading color={"white"} >Personal</Heading>
                                 </HStack>
                             </HStack>
-                            
                             </Link>
-                            
                         </Box>
                 </TouchableOpacity>
-                
-                
                 <Box bg={"#FF7A01"} p={3} rounded={"lg"} margin={1}>
                     <HStack justifyContent={"space-between"} >
                         <HStack alignItems={"center"}space={"12"}>
@@ -53,7 +46,6 @@ const Category = () => {
             <Box margin={10}>
                 {bycategory()}
             </Box>
-            
             {/* <Center flex={1}>
                 <Heading>Category</Heading>
             </Center> */}

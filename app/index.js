@@ -1,5 +1,5 @@
 import { Redirect } from "expo-router";
 const root = () => {
-    return <Redirect href="/Calender" />
+    return <Redirect href="/Todo" />
 };
 export default root;
