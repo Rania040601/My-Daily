@@ -1,4 +1,5 @@
 import { Heading, Center } from "native-base";
+import AppHeader from './AppHeader'
 // import { Header } from "../components";
 
 const Video = () => {

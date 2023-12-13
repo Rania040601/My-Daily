@@ -4,12 +4,19 @@ import { Box,HStack,Image,Heading } from "native-base";
 import { TouchableOpacity } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useNavigation } from "expo-router";
-const header = ({title,withback = false}) => {
-    const navigation =useNavigation();
+import Header from './Header'
+
+const Header = () => {
     return (
-        <SafeAreaView>
-            <StatusBar barStyle={"light-content"} backgroundColor={"#FF7A01"}></StatusBar>
-            <Box></Box>
-        </SafeAreaView>
+      <Header
+        placement="center"
+        centerComponent={{ text: 'Header Title', style: { color: '#fff' } }}
+        containerStyle={{
+          backgroundColor: '#4caf50',
+          justifyContent: 'space-around',
+        }}
+      />
     );
-};
+  };
+  
+  export default Header;
