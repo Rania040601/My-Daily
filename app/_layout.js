@@ -11,6 +11,9 @@ const StackLayout = () => {
                     <Stack.Screen name="index" options={noHead}></Stack.Screen>
                     <Stack.Screen name="ByCategory" options={noHead}></Stack.Screen>
                     <Stack.Screen name="add" options={noHead}></Stack.Screen>
+                    <Stack.Screen name="Notifications" options={noHead}></Stack.Screen>
+                    <Stack.Screen name="Login" options={noHead}></Stack.Screen>
+                    <Stack.Screen name="Register" options={noHead}></Stack.Screen>
                 </Stack>
             {/* </NavigationContainer> */}
             

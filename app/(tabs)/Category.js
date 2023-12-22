@@ -1,11 +1,16 @@
-import { Heading, Center, Box, HStack } from "native-base";
+import { Heading, Center, Box, HStack, Text, Button, Input } from "native-base";
 import  Header  from "../../components/Header";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Link } from "expo-router";
-import { TouchableOpacity } from "react-native";
+import { Animated, StyleSheet, TouchableOpacity } from "react-native";
+import { useState } from "react";
 
 
 const Category = () => {
+    const [addButton, setAddButton] = useState(false);
+    const AddHandle = () => {
+        setAddButton(true);
+    };
     const bycategory = () =>{
         return(
             <>
@@ -43,12 +48,53 @@ const Category = () => {
     return (
         <>
             <Header title={"Category"} />
+            <Box alignItems={"flex-end"}marginLeft={10} marginRight={10} marginTop={5}>
+                <TouchableOpacity onPress={AddHandle}>
+                    <Box rounded={"full"} bgColor={"#FF7A01"} p={2}>
+                        <HStack alignItems={"center"}space={3}>
+                            <Text fontSize={"lg"} color={"white"}>New</Text>
+                            <Ionicons name="add" color={"white"} size={25} />
+                        </HStack>
+                    </Box>
+                </TouchableOpacity>
+            </Box>
             <Box margin={10}>
                 {bycategory()}
             </Box>
-            {/* <Center flex={1}>
-                <Heading>Category</Heading>
-            </Center> */}
+            {addButton && (
+                <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]}>
+                    <Center flex={1} justifyContent={"center"}>
+                        <Box w={"80"} bg={"gray.300"} p={5}>
+                            <Box>
+                                <Heading color={""}>Tambah Kategori</Heading>
+                            </Box>
+                            <Box>
+                                <Input variant={"underlined"} placeholder="Nama Kategori" fontSize={"lg"} />
+                            </Box>
+                            <Box alignItems={"flex-end"}>
+                                <HStack space={3}>
+                                    <TouchableOpacity onPress={() => setAddButton(false)}>
+                                        <Box>
+                                            <HStack space={2} alignItems={"center"}>
+                                                <Text fontSize={"xl"} color={"#FF0000"}>close</Text>
+                                                <Ionicons name="close" color={"red"} size={25}/>
+                                            </HStack>
+                                        </Box>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity>
+                                        <Box>
+                                            <HStack space={2} alignItems={"center"}>
+                                                <Text fontSize={"xl"} color={"#FF7A01"}>Simpan</Text>
+                                                <Ionicons name="document" color={"#FF7A01"} size={25}/>
+                                            </HStack>
+                                        </Box>
+                                    </TouchableOpacity>
+                                </HStack>
+                            </Box>
+                        </Box>
+                    </Center>
+                </Animated.View>
+            )}
         </>
     );
 };
