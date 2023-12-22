@@ -1,26 +1,26 @@
 import React from "react";
-import {
-  View,
-  Text,
-  Box,
-  ScrollView,
-  Heading,
-  Avatar,
-  HStack,
-  Pressable,
-} from "native-base";
-import { useNavigation } from "@react-navigation/native";
+import { View, Text, Box, ScrollView, Heading, Avatar, HStack, Pressable, } from "native-base";
+import { Link, router } from "expo-router";
+import Firebase from "../../firebase"
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 const Profile = () => {
-  const navigation = useNavigation();
-
-  const handleSettingsPress = () => {
-    navigation.navigate("settings");
-  };
-  const handleLoginPress = () => {
-    navigation.navigate("login");
-  };
+  const logout = async () => {
+        Firebase.auth().signOut().then(() => {
+            clearUserData();
+        }).catch((error) => {
+            console.error(error);
+        });
+    };
+  const clearUserData = async () => {
+        try {
+            await AsyncStorage.clear();
+            router.replace("/Login");
+        } catch (e) {
+            console.error(e);
+        }
+    };
 
   return (
     <ScrollView>
@@ -55,7 +55,6 @@ const Profile = () => {
             <Pressable
               flex={1}
               alignItems="center"
-              onPress={handleSettingsPress}
             >
               <Box
                 backgroundColor="#F4CE14"
@@ -69,15 +68,14 @@ const Profile = () => {
               </Box>
               <Text>Setting</Text>
             </Pressable>
-            <Pressable flex={1} alignItems="center" onPress={handleLoginPress}>
+            <Pressable flex={1} alignItems="center" onPress={logout}>
               <Box
                 backgroundColor="#ED2B2A"
                 width={20}
                 height={20}
                 rounded={50}
                 alignItems="center"
-                justifyContent="center"
-              >
+                justifyContent="center" >
                 <Ionicons name="log-out-outline" size={28} color="white" />
               </Box>
               <Text>Sign Out</Text>
