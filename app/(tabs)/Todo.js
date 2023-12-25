@@ -1,27 +1,105 @@
 
-import { Heading, Text, Center, Box, HStack, VStack, Checkbox, Button, Fab, Pressable, Modal, ScrollView } from "native-base";
-import { SafeAreaView, View, TouchableOpacity, Animated, StyleSheet } from "react-native";
+import { Heading, Text, Center, Box, HStack, VStack, Checkbox, Button, Fab, Pressable, Modal, ScrollView, Spinner, View } from "native-base";
+import { SafeAreaView, TouchableOpacity, Animated, StyleSheet } from "react-native";
 import Header from "../../components/Header";
 import { FAB } from "@rneui/themed";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Link, router } from "expo-router";
+import Firebase from "../../firebase";
+import moment from 'moment';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const Todo = () => {
-    const [isJadwal, setIsJadwal] = useState(true)
-    const [isisiJadwal, setIsIsiJadwal] = useState(true)
+    const [isJadwal, setIsJadwal] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isisiJadwal, setIsIsiJadwal] = useState(true);
     const [addButton, setAddButton] = useState(false);
     const [showModal, setShowModal] = useState(false);
+    const [userData, setUserData] = useState({});
+    const [dataTask, setDataTask] = useState();
+    const [dataNote, setDataNote] = useState();
     const handleFABPress = () => {
-        // Ketika FAB ditekan, atur state untuk menampilkan button baru
         setAddButton(true);
+    };
+    useEffect(() => {
+        getUserData();
+    },[]);
+    const getUserData = async () => {
+        try {
+            const value = await AsyncStorage.getItem("user-data");
+            if (value !== null) {
+                const valueObject = JSON.parse(value);
+                setUserData(valueObject);
+                fetchDataTask(valueObject);
+                fetchDataNote(valueObject);
+                // console.log(dataTask)
+                // ambilkategori(valueObject);
+                // console.log(dataKategori);
+          }
+        } catch (e) {
+            console.error(e);
+        }
+    };
+    const fetchDataTask = (userData) => {
+        try {
+            const uid = userData.credential.user.uid;
+            const dataRef = Firebase.database().ref("Task/" + uid);
+            dataRef.once("value").then((snapshot) => {
+                const dataValue = snapshot.val();
+                if (dataValue != null) {
+                    const snapshotArr = Object.entries(dataValue).map((item) => {
+                        return {
+                            id: item[0],
+                            ...item[1],
+                        };
+                    });
+                setDataTask(snapshotArr);
+                }
+                // setIsLoading(false);
+            }).catch((e) => {
+                console.error(e);
+            });
+        } catch (e) {
+            console.error(e);
+        }
+    };
+    const formatDate = (dateString) => {
+        const date = moment(dateString, 'MM/DD/YYYY, h:mm:ss A').format('DD/MM/YYYY');
+        return date;
+    };
+    const formatTime = (dateString) => {
+        const date = moment(dateString, 'MM/DD/YYYY, h:mm:ss A').format('h:mm:ss');
+        return date;
+    };
+    const fetchDataNote = (userData) => {
+        try {
+            const uid = userData.credential.user.uid;
+            const dataRef = Firebase.database().ref("Note/" + uid);
+            dataRef.once("value").then((snapshot) => {
+                const dataValue = snapshot.val();
+                if (dataValue != null) {
+                    const snapshotArr = Object.entries(dataValue).map((item) => {
+                        return {
+                            id: item[0],
+                            ...item[1],
+                        };
+                    });
+                setDataNote(snapshotArr);
+                }
+                setIsLoading(false);
+            }).catch((e) => {
+                console.error(e);
+            });
+        } catch (e) {
+            console.error(e);
+        }
     };
     const CustomModal = ({ showModal, setShowModal, judul, tanggal, jam, isi }) => {
         return (
             <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
                 <Modal.Content position={"relative"}>
-                    {/* <Modal.CloseButton /> */}
-                    {/* <Modal.Header>Return Policy</Modal.Header> */}
                     <Modal.Body>
                         <Box>
                             <Box alignItems={"center"}>
@@ -52,40 +130,7 @@ const Todo = () => {
                                 </TouchableOpacity>
                             </Box>
                         </Box>
-                        {/* <Heading> {judul} </Heading>
-                        <HStack alignItems={"center"} space={1}>
-                            <Text>Date line :</Text>
-                            <HStack alignItems={"center"} space={2} >
-                                <Ionicons name="calendar" color={"black"} size={15} />
-                                <Text color="black" > {tanggal} </Text>
-                            </HStack>
-                            <HStack alignItems={"center"} space={2} >
-                                <Ionicons name="alarm" color={"black"} size={15} />
-                                <Text color="black" > {jam} </Text>
-                            </HStack>
-                        </HStack> */}
-
                     </Modal.Body>
-                    {/* <Modal.Footer>
-                        <Button.Group space={2}>
-                            <Button
-                                variant="ghost"
-                                colorScheme="blueGray"
-                                onPress={() => {
-                                    setShowModal(false);
-                                }}
-                            >
-                                Cancel
-                            </Button>
-                            <Button
-                                onPress={() => {
-                                    setShowModal(false);
-                                }}
-                            >
-                                Save
-                            </Button>
-                        </Button.Group>
-                    </Modal.Footer> */}
                 </Modal.Content>
             </Modal>
         );
@@ -110,46 +155,48 @@ const Todo = () => {
             </Box>
         );
     };
-    const Note = () => {
-        const originalText =
-            "BUMDes (Badan Usaha Milik Desa) merupakan lembaga ekonomi dan sosial berbadan hukum yang dibangun oleh pemerintah desa guna mengelola usaha dan mengembangkan investasi yang sebesar-besarnya digunakan untuk kesejahteraan masyarakat desa ​(Sofianto & Risandewi, 2021)​. Salah satu desa yang memiliki BUMDes adalah Desa Kedungdalem dengan BUMDesnya yaitu BUMDes Berlian Timur. Desa Kedungdalem sendiri merupakan desa di bawah yuridiksi administratif Kecamatan Dringu, Kabupaten Probolinggo dengan luas wilayah sebesar 107.076 Ha, 5.775 jiwa populasi penduduk dan Indeks Desa Membangun (IDM) adalah menengah. Desa Kedungdalem memiliki wilayah yang strategis karena dilewati oleh Jalan Nasional Pantura dan berjarak 5 km dari pusat Kota Probolinggo sehingga memiliki potensi ekonomi yang signifikan dalam penjualan hasil budidaya produk pangan kepada pelaku usaha di Kota Probolinggo. Sayangnya, lokasi yang strategis tersebut belum dimanfaatkan secara optimal. ";
+    const Note = (catatan, tanggal) => {
+        const originalText = catatan ;
         const words = originalText.split(" ");
         const limitedWords = words.slice(0, 20).join(" ");
         return (
-            <Box bg={"#FF7A01"} p={"5"} rounded={"lg"} margin={10}>
-                <VStack>
-                    <HStack justifyContent={"space-between"} alignItems={"center"}>
-                        <HStack alignItems={"center"}>
-                            <Text color={"white"}>{limitedWords}</Text>
+            <>
+                <Box bg={"#FF7A01"} p={"5"} rounded={"lg"}>
+                    <VStack>
+                        <HStack justifyContent={"space-between"} alignItems={"center"}>
+                            <HStack alignItems={"center"}>
+                                <Text color={"white"}>{limitedWords}</Text>
+                            </HStack>
                         </HStack>
-                    </HStack>
-                </VStack>
-                <VStack>
-                    <HStack justifyContent={"space-between"} alignItems={"center"}>
-                        <HStack alignItems={"center"}>
-                            <Ionicons name="calendar" color={"white"} size={15} />
-                            <Text>  </Text>
-                            <Text color="white" >2023-11-17</Text>
+                    </VStack>
+                    <VStack>
+                        <HStack justifyContent={"space-between"} alignItems={"center"}>
+                            <HStack alignItems={"center"}>
+                                <Ionicons name="calendar" color={"white"} size={15} />
+                                <Text>  </Text>
+                                <Text color="white" >{tanggal}</Text>
+                            </HStack>
                         </HStack>
-                    </HStack>
-                </VStack>
-            </Box>
+                    </VStack>
+                </Box>
+            </>
+            
         );
     };
-    const Tugas = () => {
+    const Tugas = (judul, tanggal, jam, catatan) => {
         return (
             <>
-                {isisiJadwal ? (
-                    <Box bg={"#FF7A01"} p={"5"} rounded={"lg"} margin={10}>
+                {dataTask ? (
+                    <Box bg={"#FF7A01"} p={"5"} rounded={"lg"}>
                         <VStack>
                             <HStack justifyContent={"space-between"} alignItems={"center"}>
                                 <HStack alignItems={"center"}>
                                     <Ionicons name="calendar" color={"white"} size={15} />
                                     <Text>  </Text>
-                                    <Text color="white" >2023-11-17</Text>
+                                    <Text color="white" >{tanggal}</Text>
                                     <Text>  </Text>
                                     <Ionicons name="alarm" color={"white"} size={15} />
-                                    <Text color="white" >19:00</Text>
+                                    <Text color="white" >{jam}</Text>
                                 </HStack>
                             </HStack>
                         </VStack>
@@ -157,7 +204,7 @@ const Todo = () => {
                             <HStack justifyContent={"space-between"} alignItems={"center"}>
                                 <TouchableOpacity onPress={() => setShowModal(true)} >
                                     <HStack alignItems={"center"}>
-                                        <Heading color={"white"}> halo </Heading>
+                                        <Heading color={"white"}> {judul} </Heading>
                                     </HStack>
                                 </TouchableOpacity>
                                 <HStack space={"2xl"}>
@@ -171,22 +218,36 @@ const Todo = () => {
                         <Heading>Todo</Heading>
                     </Center>
                 )}
-                <CustomModal showModal={showModal} setShowModal={setShowModal} judul={"halo"} tanggal={"2023-11-17"} jam={"19:00"} isi={"BUMDes (Badan Usaha Milik Desa) merupakan lembaga ekonomi dan sosial berbadan hukum yang dibangun oleh pemerintah desa guna mengelola usaha dan mengembangkan investasi yang sebesar-besarnya digunakan untuk kesejahteraan masyarakat desa ​(Sofianto & Risandewi, 2021)​."} />
+                <CustomModal showModal={showModal} setShowModal={setShowModal} judul={judul} tanggal={tanggal} jam={jam} isi={catatan} />
             </>
-
-
         );
     };
     return (
         <>
             <Header title={"To Do"} />
             {jadte()}
-            {isJadwal ? (
-                Tugas()
-            ) : (
-                Note()
-                // tambah()
-            )}
+            <Box margin={10} >
+                {isLoading ? (
+                    <Center>
+                        <Spinner size={"lg"} color={"black"} />
+                    </Center>
+                ):(
+                    isJadwal ? (
+                        dataTask.map((index) => (
+                            <VStack space={3}>
+                                {Tugas(index.judul,formatDate(index.Date),formatTime(index.Date),index.Catatan)}
+                            </VStack>
+                        ))
+                    ) : (
+                        dataNote.map((index) => (
+                            <VStack>
+                                {Note(index.Note,formatDate(index.Date))}
+                                <View h={3}/>
+                            </VStack>
+                        ))
+                    )
+                )}
+            </Box>
             {addButton ? (
                 <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]}>
                     <Box alignItems={"flex-end"} width={"full"} height={""} flex={1}>
@@ -215,5 +276,4 @@ const Todo = () => {
         </>
     );
 };
-
 export default Todo;
