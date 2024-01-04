@@ -5,10 +5,10 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "scheme": "my-scheme",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/Icontol.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/spalsh2.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -22,13 +22,22 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.tengahcang.MyDaily"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "expo-router"
-    ]
+    ],
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "7e5ec50f-e8d4-4790-9782-92d76630e464"
+      }
+    }
   }
 }

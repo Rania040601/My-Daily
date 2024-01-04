@@ -15,7 +15,7 @@ import Firebase from "../firebase";
 
 
 
-const Video = () => {
+const add = () => {
     const params = useLocalSearchParams();
     const [date,setDate] = useState (new Date());
     const [showDate,setShowDate] = useState(false);
@@ -72,8 +72,12 @@ const Video = () => {
         })),
     ];
     const simpanNote = async() => {
-        uploadNoteWithImage();
-    }
+        if (image !== null) {
+            uploadNoteWithImage()
+        } else {
+            uploadNoteWithoutImage(catatan,date.toLocaleString())
+        }
+    };
     const uploadNoteWithImage = async () => {
         const response = await fetch(image);
         const blob = await response.blob();
@@ -98,9 +102,25 @@ const Video = () => {
         Firebase.database().ref("Note/" + uid).push(data);
         router.replace("/Todo")
     };
+    const uploadNoteWithoutImage = (note, date) => {
+        const data = {
+            Note: note,
+            Date:  date,
+            Foto:  null
+        };
+        // console.log(data);
+        const uid = userData.credential.user.uid;
+        Firebase.database().ref("Note/" + uid).push(data);
+        router.replace("/Todo")
+    };
     const simpanJadwal = async() =>{
-        console.log(date.toLocaleString(),value, catatan,judul,image)
-        uploadTaskWithImage();
+        // console.log(date,value, catatan,judul,image)
+        if (image !== null) {
+            uploadTaskWithImage();
+        } else {
+            uploadTaskWithoutImage(judul,date.toLocaleString(),value,catatan)
+        }
+        // uploadTaskWithImage();
     };
     const uploadTaskWithImage = async () => {
         const response = await fetch(image);
@@ -121,7 +141,22 @@ const Video = () => {
             Date:  date,
             Kategori: kategori,
             Catatan: catatan, 
-            Foto:  filename
+            Foto:  filename,
+            Status: false
+        };
+        // console.log(data);
+        const uid = userData.credential.user.uid;
+        Firebase.database().ref("Task/" + uid).push(data);
+        router.replace("/Todo")
+    };
+    const uploadTaskWithoutImage = (judul, date, kategori, catatan) => {
+        const data = {
+            judul: judul,
+            Date:  date,
+            Kategori: kategori,
+            Catatan: catatan, 
+            Foto:  null,
+            Status: false
         };
         // console.log(data);
         const uid = userData.credential.user.uid;
@@ -187,10 +222,10 @@ const Video = () => {
                         </TouchableOpacity>
                     </HStack>
                     {showDate && (
-                        <DateTimePicker testID="dateTimePicker" value={date} mode="date" is24Hour={true} display="default" onChange={onChangeDate} />
+                        <DateTimePicker testID="dateTimePicker" value={date} mode="date" is24Hour={false} display="default" onChange={onChangeDate} />
                     )}
                     {showTime && (
-                        <DateTimePicker testID="dateTimePicker" value={date} mode="time" is24Hour={true} display="default" onChange={onChangeDate} />
+                        <DateTimePicker testID="dateTimePicker" value={date} mode="time" is24Hour={false} display="default" onChange={onChangeDate} />
                     )}
                     <HStack alignItems={"center"}>
                         <Ionicons name="document-outline" color={"black"} size={30}/>
@@ -283,4 +318,4 @@ const Video = () => {
         </>
     );
 };
-export default Video;
+export default add;
