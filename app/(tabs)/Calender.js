@@ -1,4 +1,4 @@
-import { Heading, Center, Box, VStack, HStack, Text,Checkbox, FlatList, Modal } from "native-base";
+import { Heading, Center, Box, VStack, HStack, Text,Checkbox, FlatList, Modal, Spinner } from "native-base";
 import  Header from "../../components/Header";
 import { Calendar, LocaleConfig } from "react-native-calendars";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -7,10 +7,12 @@ import Firebase from "../../firebase";
 import moment from 'moment';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { TouchableOpacity } from "react-native";
+import { router } from "expo-router";
 
 const Calender = () => {
     const [dataTask, setDataTask] = useState([]);
     const [showModal, setShowModal] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [userData, setUserData] = useState({});
     const [selectedDate, setSelectedDate] = useState('');
     const [selectedItems, setSelectedItems] = useState([]);
@@ -46,7 +48,7 @@ const Calender = () => {
                     });
                 setDataTask(snapshotArr);
                 }
-                // setIsLoading(false);
+                setIsLoading(false);
             }).catch((e) => {
                 console.error(e);
             });
@@ -54,7 +56,7 @@ const Calender = () => {
             console.error(e);
         }
     };
-    const Tugas = (judul, tanggal, jam, catatan) => {
+    const Tugas = (judul, date, tanggal, jam, kategori, catatan, ID, Foto, Status) => {
         return (
             <>
                 {dataTask ? (
@@ -73,13 +75,31 @@ const Calender = () => {
                         </VStack>
                         <VStack>
                             <HStack justifyContent={"space-between"} alignItems={"center"}>
-                                <TouchableOpacity onPress={() => setShowModal(true)} >
+                                <TouchableOpacity onPress={() => setShowModal({ ...showModal, [ID]: true })} >
                                     <HStack alignItems={"center"}>
                                         <Heading color={"white"}> {judul} </Heading>
+                                        {/* <Text> {kategori} </Text> */}
                                     </HStack>
                                 </TouchableOpacity>
                                 <HStack space={"2xl"}>
-                                    <Checkbox rounded={"xl"} borderColor={"white"} bgColor={"#FF7A01"} size={"lg"} />
+                                    
+                                    <Checkbox
+                                        rounded={"xl"}
+                                        borderColor={"white"}
+                                        bgColor={"#FF7A01"}
+                                        size={"lg"}
+                                        isChecked={Status}
+                                        onPress={() => {
+                                            const newStatus = !Status;
+                                            updateCheckboxStatus(newStatus, ID);
+                                            setIsLoading(true);
+                                            setSelectedDate(null);
+                                            setSelectedItems([]);
+                                            getUserData();
+                                        }}
+                                    />
+                                    
+                                    
                                 </HStack>
                             </HStack>
                         </VStack>
@@ -89,55 +109,105 @@ const Calender = () => {
                         <Heading>Todo</Heading>
                     </Center>
                 )}
-                <CustomModal showModal={showModal} setShowModal={setShowModal} judul={judul} tanggal={tanggal} jam={jam} isi={catatan} />
+                <CustomModal showModal={showModal[ID] || false} setShowModal={(value) => setShowModal({ ...showModal, [ID]: value })} judul={judul} date={date} tanggal={tanggal} jam={jam} categori={kategori} isi={catatan} ID={ID} foto={Foto}/>
             </>
         );
     };
-    const CustomModal = ({ showModal, setShowModal, judul, tanggal, jam, isi }) => {
+    const CustomModal = ({ showModal, setShowModal, judul, date, tanggal, jam, categori, isi, ID, foto }) => {
         return (
             <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
                 <Modal.Content position={"relative"}>
                     <Modal.Body>
                         <Box>
-                            <Box alignItems={"center"}>
-                                <TouchableOpacity onPress={() => { setShowModal(false) }}>
-                                    <Box bgColor={"#FF7A01"} rounded={"full"} alignItems={"center"} >
-                                        <Ionicons name="close" color={"white"} size={30} />
+                            <VStack space={3}>
+                                <Box alignItems={"center"}>
+                                    <TouchableOpacity onPress={() => { setShowModal(false) }}>
+                                        <Box bgColor={"#FF7A01"} rounded={"full"} alignItems={"center"} >
+                                            <Ionicons name="close" color={"white"} size={30} />
+                                        </Box>
+                                    </TouchableOpacity>
+                                </Box>
+                                <TouchableOpacity onPress={() => router.push({pathname:"/DetailTask", params:{judul:judul, date:date, category:categori, isi:isi, ID:ID, kategory:"jadwal", foto:foto}})}>
+                                    <Box>
+                                        <VStack>
+                                            <Heading> {judul} </Heading>
+                                            <HStack alignItems={"center"} space={1}>
+                                                <Text>Date line :</Text>
+                                                <HStack alignItems={"center"} space={2} >
+                                                    <Ionicons name="calendar" color={"black"} size={15} />
+                                                    <Text color="black" > {tanggal} </Text>
+                                                </HStack>
+                                                <HStack alignItems={"center"} space={2} >
+                                                    <Ionicons name="alarm" color={"black"} size={15} />
+                                                    <Text color="black" > {jam} </Text>
+                                                </HStack>
+                                            </HStack>
+                                            <Text> {isi} </Text>
+                                        </VStack>
                                     </Box>
                                 </TouchableOpacity>
-                            </Box>
-                            <Heading> {judul} </Heading>
-                            <HStack alignItems={"center"} space={1}>
-                                <Text>Date line :</Text>
-                                <HStack alignItems={"center"} space={2} >
-                                    <Ionicons name="calendar" color={"black"} size={15} />
-                                    <Text color="black" > {tanggal} </Text>
-                                </HStack>
-                                <HStack alignItems={"center"} space={2} >
-                                    <Ionicons name="alarm" color={"black"} size={15} />
-                                    <Text color="black" > {jam} </Text>
-                                </HStack>
-                            </HStack>
-                            <Text> {isi} </Text>
-                            <Box alignItems={"center"} >
-                                <TouchableOpacity onPress={() => { setShowModal(false) }}>
-                                    <Box w={"10"} bgColor={"#FF7A01"} rounded={10} alignItems={"center"} >
-                                        <Text fontSize={"xl"} color={"white"}>ok</Text>
-                                    </Box>
-                                </TouchableOpacity>
-                            </Box>
+                                <Box alignItems={"center"} justifyContent={"center"}>
+                                    <HStack space={"16"} justifyContent={"center"}>
+                                        <TouchableOpacity onPress={() => router.push({pathname: "/edit", params:{judul:judul, date:date, category:categori, isi:isi, ID:ID, kategory:"jadwal", foto:foto}})}>
+                                            <Box>
+                                                <Ionicons name="create-outline" color={"black"} size={30} />
+                                            </Box>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={() => { setShowModal(false) }}>
+                                            <Box w={"10"} bgColor={"#FF7A01"} rounded={10} alignItems={"center"} >
+                                                <Text fontSize={"xl"} color={"white"}>ok</Text>
+                                            </Box>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={()=>deleteDataTaskHandler(ID)}>
+                                            <Box>
+                                                <Ionicons name="trash-outline" color={"black"} size={30} />
+                                            </Box>
+                                        </TouchableOpacity>
+                                    </HStack>
+                                </Box>
+                            </VStack>
                         </Box>
                     </Modal.Body>
                 </Modal.Content>
             </Modal>
         );
     };
+    const deleteDataTaskHandler = (id) => {
+        const uid = userData.credential.user.uid;
+        // Menghapus data di Firebase
+        Firebase.database().ref(`Task/${uid}/${id}`).remove();
+        setShowModal(false)
+        setIsLoading(true)
+        setSelectedDate(null)
+        setSelectedItems([])
+        // Re-Fetch;
+        getUserData();
+    };
+    const updateCheckboxStatus = async (newStatus,ID) => {
+        try {
+            const uid = userData.credential.user.uid;
+            const dataRef = Firebase.database().ref(`Task/${uid}/${ID}`);
+            const snapshot = await dataRef.once("value");
+            const existingNote = snapshot.val();
+        
+            if (!existingNote) {
+                console.log("Note not found");
+                return;
+            }
+        
+            // Update status pada database
+            await dataRef.update({ Status: newStatus });
+            console.log("Status updated successfully");
+        } catch (error) {
+            throw error;
+        }
+    };
     const formatDate = (dateString) => {
         const date = moment(dateString, 'MM/DD/YYYY, h:mm:ss A').format('DD/MM/YYYY');
         return date;
     };
     const formatTime = (dateString) => {
-        const date = moment(dateString, 'MM/DD/YYYY, h:mm:ss A').format('h:mm:ss');
+        const date = moment(dateString, 'MM/DD/YYYY, h:mm:ss A').format('h:mm:ss A');
         return date;
     };
     const markedDates = {};
@@ -158,44 +228,31 @@ const Calender = () => {
     return (
         <>
             <Header title={"Calender"} />
-            <Box padding={10}>
-                <Calendar theme={{
-                    backgroundColor: '#F2F2F2',
-                    calendarBackground: '#F2F2F2',
-                    textSectionTitleColor: '#b6c1cd',
-                    selectedDayBackgroundColor: '#00adf5',
-                    selectedDayTextColor: '#ffffff',
-                    todayTextColor: '#FF7A01',
-                    // dayTextColor: '#000000',
-                    arrowColor:'#FF7A01',
-                }} markedDates={markedDates} onDayPress={handleDayPress} />
-            </Box>
-            {/* <Box bg={"#FF7A01"} p={"5"} rounded={"lg"} margin={10}>
-                <VStack>
-                    <HStack justifyContent={"space-between"} alignItems={"center"}>
-                        <HStack alignItems={"center"}>
-                            <Ionicons name="calendar" color={"white"} size={15} />
-                            <Text>  </Text>
-                            <Text color="white" >2023-11-17</Text>
-                            <Text>  </Text>
-                            <Ionicons name="alarm" color={"white"} size={15} />
-                            <Text color="white" >19:00</Text>
-                        </HStack>
-                    </HStack>
-                </VStack>
-                <VStack>
-                    <HStack justifyContent={"space-between"} alignItems={"center"}>
-                        <HStack alignItems={"center"}>            
-                            <Heading color={"white"}> halo </Heading>
-                        </HStack>
-                    </HStack>
-                </VStack>
-            </Box> */}
-            <Box margin={10}>
-                <FlatList data={selectedItems} keyExtractor={(item) => item.id.toString()} renderItem={({item}) => <React.Fragment>
-                    {Tugas(item.judul,formatDate(item.Date),formatTime(item.Date),item.Catatan)}
-                </React.Fragment> }/>
-            </Box>
+            {isLoading ? (
+                <Center>
+                    <Spinner size={"lg"} color={"black"} />
+                </Center>
+            ):(
+                <>
+                    <Box padding={10}>
+                        <Calendar theme={{
+                            backgroundColor: '#F2F2F2',
+                            calendarBackground: '#F2F2F2',
+                            textSectionTitleColor: '#b6c1cd',
+                            selectedDayBackgroundColor: '#00adf5',
+                            selectedDayTextColor: '#ffffff',
+                            todayTextColor: '#FF7A01',
+                            // dayTextColor: '#000000',
+                            arrowColor: '#FF7A01',
+                        }} markedDates={markedDates} onDayPress={handleDayPress} />
+                    </Box>
+                    <Box margin={10}>
+                        <FlatList data={selectedItems} keyExtractor={(item) => item.id.toString()} renderItem={({ item }) => <React.Fragment>
+                            {Tugas(item.judul,item.Date, formatDate(item.Date), formatTime(item.Date),item.Kategori,item.Catatan,item.id,item.Foto,item.Status)}
+                            </React.Fragment>} />
+                    </Box>
+                </>
+            )}
             
         </>
     );
