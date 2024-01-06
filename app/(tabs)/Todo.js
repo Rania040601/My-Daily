@@ -9,6 +9,8 @@ import { Link, router } from "expo-router";
 import Firebase from "../../firebase";
 import moment from 'moment';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Location from 'expo-location';
+
 
 
 const Todo = () => {
@@ -20,7 +22,10 @@ const Todo = () => {
     const [userData, setUserData] = useState({});
     const [dataTask, setDataTask] = useState();
     const [dataNote, setDataNote] = useState();
-    console.log(dataTask)
+    const [location, setLocation] = useState(null);
+    const [errorMsg, setErrorMsg] = useState(null);
+    const [cuaca, setCuaca] = useState();
+    // console.log(cuaca)
     const handleFABPress = () => {
         setAddButton(true);
     };
@@ -33,6 +38,7 @@ const Todo = () => {
             if (value !== null) {
                 const valueObject = JSON.parse(value);
                 setUserData(valueObject);
+                // findLocation();
                 fetchDataTask(valueObject);
                 fetchDataNote(valueObject);
                 // console.log(userData);
@@ -41,6 +47,26 @@ const Todo = () => {
             console.error(e);
         }
     };
+    // const findLocation = async() => {
+    //     let { status } = await Location.requestForegroundPermissionsAsync();
+    //     if (status !== 'granted') {
+    //         setErrorMsg('Permission to access location was denied');
+    //         return;
+    //     }
+    //     let location = await Location.getCurrentPositionAsync({});
+    //     setLocation(location);
+    //     getCuaca();
+    // };
+    // const getCuaca = () => {
+    //     const apiKey = 'ZUTPP8YANKHJA7DCMTTE46V4Y';
+    //     const latitude = location.coords.latitude;
+    //     const longitude = location.coords.longitude;
+
+    //     fetch(`https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${latitude},${longitude}?unitGroup=metric&key=${apiKey}&contentType=json`)
+    //     .then(response => response.json())
+    //     .then(data => setCuaca(data.currentConditions))
+    //     .catch(error => console.error(error));
+    // };
     const fetchDataTask = (userData) => {
         try {
             const uid = userData.credential.user.uid;
@@ -186,7 +212,7 @@ const Todo = () => {
     const jadte = () => {
         return (
             <Box alignItems={"center"} width={"full"} height={150}>
-                <Box bg={"#FF7A01"} p={"3"} rounded={16} margin={10}>
+                <Box bg={"#FF7A01"} p={"3"} rounded={16} marginLeft={10} marginRight={10} marginTop={5} marginBottom={5}>
                     <HStack >
                         <HStack alignItems={"center"}>
                             <Button width={90} rounded={"full"} onPress={() => setIsJadwal(true)} bg={isJadwal ? "#FFFFFF" : "#FF7A01"}>
@@ -295,7 +321,7 @@ const Todo = () => {
             <Header title={"To Do"} />
             {jadte()}
             <ScrollView>
-                <Box margin={10} >
+                <Box marginLeft={10} marginRight={10} marginBottom={5} marginTop={5} >
                     {isLoading ? (
                         <Center>
                             <Spinner size={"lg"} color={"black"} />
