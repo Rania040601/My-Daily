@@ -1,11 +1,5 @@
 import React, { useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  Button,
-  ScrollView,
-} from "react-native";
+import { StyleSheet, Text, View, Button, ScrollView, } from "react-native";
 
 const HelpScreen = () => {
   return (

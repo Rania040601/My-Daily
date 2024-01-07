@@ -9,6 +9,8 @@ import { Link, router } from "expo-router";
 import Firebase from "../../firebase";
 import moment from 'moment';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Location from 'expo-location';
+
 
 
 const Todo = () => {
@@ -20,7 +22,8 @@ const Todo = () => {
     const [userData, setUserData] = useState({});
     const [dataTask, setDataTask] = useState();
     const [dataNote, setDataNote] = useState();
-    console.log(dataTask)
+    const [location, setLocation] = useState(null);
+    const [errorMsg, setErrorMsg] = useState(null);
     const handleFABPress = () => {
         setAddButton(true);
     };
@@ -35,8 +38,7 @@ const Todo = () => {
                 setUserData(valueObject);
                 fetchDataTask(valueObject);
                 fetchDataNote(valueObject);
-                // console.log(userData);
-          }
+            }
         } catch (e) {
             console.error(e);
         }
@@ -186,7 +188,7 @@ const Todo = () => {
     const jadte = () => {
         return (
             <Box alignItems={"center"} width={"full"} height={150}>
-                <Box bg={"#FF7A01"} p={"3"} rounded={16} margin={10}>
+                <Box bg={"#FF7A01"} p={"3"} rounded={16} marginLeft={10} marginRight={10} marginTop={5} marginBottom={5}>
                     <HStack >
                         <HStack alignItems={"center"}>
                             <Button width={90} rounded={"full"} onPress={() => setIsJadwal(true)} bg={isJadwal ? "#FFFFFF" : "#FF7A01"}>
@@ -295,7 +297,7 @@ const Todo = () => {
             <Header title={"To Do"} />
             {jadte()}
             <ScrollView>
-                <Box margin={10} >
+                <Box marginLeft={10} marginRight={10} marginBottom={5} marginTop={5} >
                     {isLoading ? (
                         <Center>
                             <Spinner size={"lg"} color={"black"} />
