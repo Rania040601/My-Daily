@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 const header = ({title,withback = false}) => {
     const [location, setLocation] = useState(null);
     const [cuaca, setCuaca] = useState();
-    console.log(cuaca)
+    // console.log(cuaca)
     useEffect( async () => {
         let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
@@ -21,7 +21,6 @@ const header = ({title,withback = false}) => {
         const apiKey = 'ZUTPP8YANKHJA7DCMTTE46V4Y';
         const latitude = location.coords.latitude;
         const longitude = location.coords.longitude;
-
         fetch(`https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${latitude},${longitude}?unitGroup=metric&key=${apiKey}&contentType=json`)
         .then(response => response.json())
         .then(data => setCuaca(data.currentConditions))
@@ -50,11 +49,27 @@ const header = ({title,withback = false}) => {
                     {!withback ?(
                         <HStack space={"2xl"} alignItems={"center"}>
                             {cuaca ? (
-                                <HStack>
-                                    <Box mr={"3"} bgColor={"black"}>
-                                        <Image size={30} source={require(`../assets/weather/${cuaca.icon}.png`)}/>
-                                    </Box>
-                                    <Text fontSize={"xl"}>{cuaca.feelslike}°C</Text>
+                                <HStack alignContent={"center"}>
+                                    {cuaca.icon === "clear-day" ? (
+                                        <Image style={{ width: 30, height: 30 }} source={require(`../assets/weather/clear-day.png`)} />
+                                    ) : cuaca.icon === "clear-night" ? (
+                                        <Image style={{ width: 30, height: 30 }} source={require(`../assets/weather/clear-night.png`)} />
+                                    ) : cuaca.icon === "cloudy" ? (
+                                        <Image style={{ width: 30, height: 30 }} source={require(`../assets/weather/cloudy.png`)} />
+                                    ) : cuaca.icon === "fog" ? (
+                                        <Image style={{ width: 30, height: 30 }} source={require(`../assets/weather/fog.png`)} />
+                                    ) : cuaca.icon === "partly-cloudy-day" ? (
+                                        <Image style={{ width: 30, height: 30 }} source={require(`../assets/weather/partly-cloudy-day.png`)} />
+                                    ) : cuaca.icon === "partly-cloudy-night" ? (
+                                        <Image style={{ width: 30, height: 30 }} source={require(`../assets/weather/partly-cloudy-night.png`)} />
+                                    ) : cuaca.icon === "rain" ? (
+                                        <Image style={{ width: 30, height: 30 }} source={require(`../assets/weather/rain.png`)} />
+                                    ) : cuaca.icon === "snow" ? (
+                                        <Image style={{ width: 30, height: 30 }} source={require(`../assets/weather/snow.png`)} />
+                                    ) : cuaca.icon === "wind" ? (
+                                        <Image style={{ width: 30, height: 30 }} source={require(`../assets/weather/wind.png`)} />
+                                    ): null}
+                                    <Text fontSize={"xl"} color={"white"}>{cuaca.feelslike}°C</Text>
                                 </HStack>
                             ):(
                                 <>

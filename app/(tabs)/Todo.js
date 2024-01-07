@@ -24,8 +24,6 @@ const Todo = () => {
     const [dataNote, setDataNote] = useState();
     const [location, setLocation] = useState(null);
     const [errorMsg, setErrorMsg] = useState(null);
-    const [cuaca, setCuaca] = useState();
-    // console.log(cuaca)
     const handleFABPress = () => {
         setAddButton(true);
     };
@@ -38,35 +36,13 @@ const Todo = () => {
             if (value !== null) {
                 const valueObject = JSON.parse(value);
                 setUserData(valueObject);
-                // findLocation();
                 fetchDataTask(valueObject);
                 fetchDataNote(valueObject);
-                // console.log(userData);
-          }
+            }
         } catch (e) {
             console.error(e);
         }
     };
-    // const findLocation = async() => {
-    //     let { status } = await Location.requestForegroundPermissionsAsync();
-    //     if (status !== 'granted') {
-    //         setErrorMsg('Permission to access location was denied');
-    //         return;
-    //     }
-    //     let location = await Location.getCurrentPositionAsync({});
-    //     setLocation(location);
-    //     getCuaca();
-    // };
-    // const getCuaca = () => {
-    //     const apiKey = 'ZUTPP8YANKHJA7DCMTTE46V4Y';
-    //     const latitude = location.coords.latitude;
-    //     const longitude = location.coords.longitude;
-
-    //     fetch(`https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${latitude},${longitude}?unitGroup=metric&key=${apiKey}&contentType=json`)
-    //     .then(response => response.json())
-    //     .then(data => setCuaca(data.currentConditions))
-    //     .catch(error => console.error(error));
-    // };
     const fetchDataTask = (userData) => {
         try {
             const uid = userData.credential.user.uid;
