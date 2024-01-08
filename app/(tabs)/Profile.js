@@ -46,7 +46,7 @@ const Profile = () => {
               </HStack>
             </Box>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => logout}>
+          <TouchableOpacity onPress={() => logout()}>
             <Box bg={"#FF7A01"} p={"3"} rounded={16} width={"72"} marginTop={5} marginBottom={5}>
               <HStack justifyContent={"space-between"}>
                 <HStack alignItems={"center"}>

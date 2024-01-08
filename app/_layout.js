@@ -18,6 +18,8 @@ const StackLayout = () => {
                     <Stack.Screen name="DetailNote" options={noHead}></Stack.Screen>
                     <Stack.Screen name="DetailTask" options={noHead}></Stack.Screen>
                     <Stack.Screen name="setting" options={noHead}></Stack.Screen>
+                    <Stack.Screen name="help" options={noHead}></Stack.Screen>
+                    <Stack.Screen name="aboutus" options={noHead}></Stack.Screen>
                 </Stack>
             {/* </NavigationContainer> */}
             
