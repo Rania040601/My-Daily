@@ -3,7 +3,7 @@ import React from "react";
 import { View, Text, Box, VStack, HStack, Divider, Switch } from "native-base";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import  Header  from "../components/Header";
-import { useNavigation } from "expo-router";
+import { router, useNavigation } from "expo-router";
 import { TouchableOpacity, TouchableOpacityBase } from "react-native";
 // import { Header } from "../components";
 
@@ -47,13 +47,13 @@ const settings = () => {
               <Box>
                 <Text underline={1}fontSize={"lg"} bold={1}>Extra</Text>
               </Box>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => router.push("/help")}>
                 <Box width={"full"} h={"12"} justifyContent={"center"}>
                   <Text>Bantuan</Text>
                 </Box>
               </TouchableOpacity>
               <Divider />
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => router.push("/aboutus")}>
                 <Box width={"full"} h={"12"} justifyContent={"center"}>
                   <Text>Tentang Kamu</Text>
                 </Box>
